@@ -1,0 +1,74 @@
+---
+layout: post
+title: Fluent Interfaces in Coffeescript
+date: 2013-07-30 14:30:39.000000000 -05:00
+categories:
+- Node.js
+tags:
+- coffeescript
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '25054220'
+  geo_public: '0'
+  _publicize_pending: '1'
+  _wpas_done_881585: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:1471181839;b:1;}}
+  publicize_twitter_user: adamnengland
+  _wpas_done_881586: '1'
+  _wpas_done_881584: '1'
+  _wpas_skip_881585: '1'
+  _wpas_skip_881586: '1'
+  _wpas_skip_881584: '1'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>We've all seen them - builder patterns that make object construction clean and readable.</p>
+<p>person().named('Bob').withSpouse('Alice').bornOn('01-26-1982').build()</p>
+<p>I used to do these all the time in Java (we called them fluent interfaces), and I just realized today that I had no idea how to do this style in Coffeescript. Well, lets remedy that.</p>
+<p>To get started, I'm going to follow the basic pattern I've followed in Java. Since CoffeeScript provides native class functionality, its a pretty simple clone.</p>
+<p>{% highlight coffeescript %}<br />
+class Person</p>
+<p>  named: (name) -&gt;<br />
+    @name = name<br />
+    @</p>
+<p>  withSpouse: (spouse) -&gt;<br />
+    @spouse = spouse<br />
+    @</p>
+<p>  bornOn: (dob) -&gt;<br />
+    @dob = dob<br />
+    @</p>
+<p>  build : -&gt;<br />
+    return {<br />
+      name: @name<br />
+      spouse: @spouse<br />
+      dob: @dob<br />
+    }</p>
+<p>console.log new Person().named('Adam').withSpouse('Rachel').build()<br />
+{% endhighlight %}</p>
+<p>But hey, this is coffeescript.  We can do better.  Lets use a attribute shortcut to reduce the code length.</p>
+<p>{% highlight coffeescript %}<br />
+class Person</p>
+<p>  named: (@name) -&gt;<br />
+    @</p>
+<p>  withSpouse: (@spouse) -&gt;<br />
+    @</p>
+<p>  bornOn: (@dob) -&gt;<br />
+    @</p>
+<p>  build : -&gt;<br />
+    return {<br />
+      name: @name<br />
+      spouse: @spouse<br />
+      dob: @dob<br />
+    }</p>
+<p>console.log new Person().named('Adam').withSpouse('Rachel').build()<br />
+{% endhighlight %}</p>
+<p>I suspect there may be an even cleaner way to do this, but this seems concise enough for now.</p>
+<p>The full source code is available here:  https://github.com/adamnengland/coffee-fluent-interface</p>

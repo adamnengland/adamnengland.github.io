@@ -1,0 +1,128 @@
+---
+layout: post
+title: Map Reducing the Royals with Mongo
+date: 2012-07-16 08:00:33.000000000 -05:00
+categories:
+- MongoDB
+tags:
+- MapReduce
+- MongoDB
+- NoSQL
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '25054220'
+  _wpas_done_facebook: '1'
+  _wpas_done_twitter: '1'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p><a href="http://www.mongodb.org/">MongoDb</a> is a real lifesaver when it comes to improving developer productivity in web applications, however, that's only a small part of the power in MongoDb. To do a lot of the deep down data mining, we need to learn to use <a href="http://www.mongodb.org/display/DOCS/MapReduce">Map/Reduce to massage our data</a>. Please note, some of this functionality can be accomplished using Mongo's <a href="http://www.mongodb.org/display/DOCS/Aggregation">Aggregate functions</a>, however, I've intentionally avoided it, as there are limitations with using aggregates on sharded environments, and I expect most of my Mongo apps will need to be sharded.</p>
+<p>Since we just finished the <a href="http://mlb.mlb.com/mlb/events/all_star/y2012/">2012 All-Star Game</a> here in <a href="http://www.kansascity.com/">Kansas City</a>, a baseball statistics example seems appropriate.</p>
+<p><strong>Setting up your environment</strong><br />
+You'll need to have console access to a mongodb database. To set up mongo on your computer, see the <a href="http://www.mongodb.org/display/DOCS/Quickstart">Quick Start</a>.</p>
+<p><strong>Loading some sample data</strong><br />
+Lets create some realistic baseball stats. I'll start with the real roster for the <a href="http://kansascity.royals.mlb.com">Kansas City Royals</a>. However, instead of using their real stats, we'll generate some random numbers using javascript's Math object. For example, we know that the best players in the league will get 200 hits, the worst players get none. <code>Math.floor(Math.random()*200)</code> will give us a random number between 0 and 200. We'll make sure that the number of hits never exceeds the number of At-Bats, and we'll keep the number of Home Runs capped at 50 (rather generous for the Royals).</p>
+<p>To add a single player, we can run the following javascript:</p>
+<p>{% highlight javascript %}<br />
+db.Player.save({<br />
+  number : 47,<br />
+  name: 'Nathan Adcock',<br />
+  hits : Math.floor(Math.random()*200),<br />
+  ab: Math.floor(Math.random()*300)+200,<br />
+  bb:Math.floor(Math.random()*50)+5,<br />
+  hr: Math.floor(Math.random()*50)<br />
+});<br />
+{% endhighlight %}</p>
+<p>Grab the script for the whole roster <a href="https://github.com/adamnengland/royals-mongo/blob/master/sampleStatsData.js">here</a>, and run it in your mongo console.</p>
+<p><strong>Counting Home Runs</strong><br />
+Confirm that you've got the data loaded. Your stats for <a href="http://www.baseball-reference.com/players/b/butlebi03.shtml">Billy Butler</a> will vary (my Billy Butler kind of sucks), but you should always have 43 players.</p>
+<p>{% highlight javascript %}<br />
+&gt;db.Player.count();<br />
+43<br />
+&gt;db.Player.find({name: 'Billy Butler'});<br />
+{<br />
+  "_id" : ObjectId("50021639b5145ef5327c66b2"),<br />
+  "number" : 16,<br />
+  "name" : "Billy Butler",<br />
+  "hits" : 66,<br />
+  "ab" : 386,<br />
+  "bb" : 5,<br />
+  "hr" : 5<br />
+}<br />
+{% endhighlight %}</p>
+<p>We now know how many home runs Billy Butler hit this season, but let us say we want to find the number of home runs that the combined Royals roster hit this season.</p>
+<p>{% highlight javascript %}<br />
+var map = function() {<br />
+	emit( { }, { hr: this.hr} );<br />
+};</p>
+<p>var reduce = function(key, values) {<br />
+	var sum = 0;<br />
+	values.forEach(function(doc) {<br />
+    	sum += doc.hr;<br />
+  	});<br />
+	return sum;<br />
+};</p>
+<p>homeRuns = db.runCommand( {<br />
+     mapreduce: 'Player',<br />
+     map: map,<br />
+     reduce: reduce,<br />
+     out: 'totalHomers',<br />
+     verbose: true<br />
+} );</p>
+<p>db[homeRuns.result].find();</p>
+<p>{% endhighlight %}</p>
+<p><strong>A more complex example</strong></p>
+<p>Cool huh? Lets take a slightly more complicated case. We'd like to take all players with more than 250 AB, and group them by batting average.</p>
+<p>{% highlight javascript %}<br />
+var map = function() {<br />
+	var ba = this.hits /this.ab;<br />
+	if (ba &lt; .250) {<br />
+		key = '&lt; .250';<br />
+	}<br />
+	if (ba &gt; .250 &amp;&amp; ba &lt; .300) {<br />
+		key = '.250 -&gt; .300';<br />
+	}<br />
+	if (ba &gt; .300) {<br />
+		key = '&gt; .300';<br />
+	}<br />
+	emit(key, { count : 1});<br />
+};</p>
+<p>var reduce = function(key, values) {<br />
+	var sum = 0;<br />
+	values.forEach(function(doc) {<br />
+	  sum += doc.count;<br />
+	});<br />
+  	return sum;<br />
+};</p>
+<p>ba = db.runCommand( {<br />
+    mapreduce: 'Player',<br />
+    map: map,<br />
+    reduce: reduce,<br />
+    query: {"ab": {$gt: 250}},<br />
+    out: 'battingAverages',<br />
+    verbose: true<br />
+} );</p>
+<p>db[ba.result].find();<br />
+{% endhighlight %}</p>
+<p><a href="https://github.com/adamnengland/royals-mongo/blob/master/battingAverage.js">Source Code</a></p>
+<p>These examples are pretty simple, but we can still take away a few lessons:</p>
+<ul>
+<li>Do the heavy lifting in the map function. These are the tasks that get executed in parallel across your shards. For example, by pushing the batting average calculation, and the categorization into the map function, we ensure a fast runtime across a large dataset.</li>
+<li>Make use of the query arg for the map/reduce command. By filtering out the undesireable data, we save mapping operations and reduce the load on the db</li>
+</ul>
+<p>Credits:<br />
+Thanks to several bloggers who helped me understand this concept:</p>
+<ul>
+<li><a href="http://kylebanker.com/blog/2009/12/mongodb-map-reduce-basics/">Kyle Banker - MongoDB Aggregation III: Map-Reduce Basics</a></li>
+<li><a href="http://blog.serverdensity.com/2010/06/21/map-reduce-and-mongodb/">Server Density - Map reduce and MongoDB</a></li>
+</ul>
+<p>Full source code is available on <a href="https://github.com/adamnengland/royals-mongo">github.</a><br />
+[polldaddy poll=6391518]</p>

@@ -1,0 +1,174 @@
+---
+layout: post
+title: Clustering Web Sockets with Socket.IO and Express 3
+date: 2013-01-30 08:10:43.000000000 -06:00
+categories:
+- Node.js
+tags:
+- coffeescript
+- express
+- node.js
+- socket.io
+- websockets
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '25054220'
+  _publicize_pending: '1'
+  _wpas_done_881585: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:1471181839;b:1;}}
+  publicize_twitter_user: adamnengland
+  _wpas_done_881586: '1'
+  _wpas_done_881584: '1'
+  _wpas_skip_881585: '1'
+  _wpas_skip_881586: '1'
+  _wpas_skip_881584: '1'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p><a href="http://nodejs.org/">Node.js</a> gets a lot of well-deserved press for its impressive performance. The event loop can handle pretty impressive loads with a single process. However, most servers have multiple processors, and I, for one, would like to take advantage of them. <a href="http://nodejs.org/api/cluster.html">Node's cluster api</a> can help.</p>
+<p>While cluster is a core api in node.js, I'd like to incorporate it with <a href="http://expressjs.com/">Express 3</a> and <a href="http://socket.io/">Socket.io</a>.</p>
+<p>Final source code available on <a href="https://github.com/adamnengland/node_cluster_socket_express">github</a></p>
+<p>The node cluster docs gives us the following example.</p>
+<p>{% highlight javascript %}<br />
+cluster = require("cluster")<br />
+http = require("http")<br />
+numCPUs = require("os").cpus().length<br />
+if cluster.isMaster<br />
+  i = 0<br />
+  while i &lt; numCPUs     cluster.fork()     i++   cluster.on "exit", (worker, code, signal) -&gt;<br />
+    console.log "worker " + worker.process.pid + " died"<br />
+else<br />
+  http.createServer((req, res) -&gt;<br />
+    res.writeHead 200<br />
+    res.end "hello world\n"<br />
+  ).listen 8000<br />
+{% endhighlight %}</p>
+<p>The code compiles and runs, but I have not confirmation that things are actually working. I'd like to add a little logging to confirm that we actually have multiple workers going. Lets add these lines right before the 'exit' listener.</p>
+<p>{% highlight javascript %}<br />
+  cluster.on 'fork', (worker) -&gt;<br />
+    console.log 'forked worker ' + worker.id<br />
+{% endhighlight %}</p>
+<p>On my machine, we get this output:<br />
+coffee server<br />
+forked worker 1<br />
+forked worker 2<br />
+forked worker 3<br />
+forked worker 4<br />
+forked worker 5<br />
+forked worker 6<br />
+forked worker 7<br />
+forked worker 8</p>
+<p>So far, so good. Lets add express to the mix.</p>
+<p>{% highlight javascript %}<br />
+cluster = require("cluster")<br />
+http = require("http")<br />
+numCPUs = require("os").cpus().length<br />
+if cluster.isMaster<br />
+  i = 0<br />
+  while i &lt; numCPUs     cluster.fork()     i++   cluster.on 'fork', (worker) -&gt;<br />
+    console.log 'forked worker ' + worker.process.pid<br />
+  cluster.on "listening", (worker, address) -&gt;<br />
+    console.log "worker " + worker.process.pid + " is now connected to " + address.address + ":" + address.port<br />
+  cluster.on "exit", (worker, code, signal) -&gt;<br />
+    console.log "worker " + worker.process.pid + " died"<br />
+else<br />
+  app = require("express")()<br />
+  server = require("http").createServer(app)<br />
+  server.listen 8000<br />
+  app.get "/", (req, res) -&gt;<br />
+    console.log 'request handled by worker with pid ' + process.pid<br />
+    res.writeHead 200<br />
+    res.end "hello world\n"<br />
+{% endhighlight %}</p>
+<p>At this point, I'd like to throw a few http requests against the setup to ensure that I'm really utilizing all my processors.<br />
+Running (curl -XGET "http://localhost:8000") 6 times makes the node process go:</p>
+<p>request handled by worker with pid 85229<br />
+request handled by worker with pid 85231<br />
+request handled by worker with pid 85231<br />
+request handled by worker with pid 85231<br />
+request handled by worker with pid 85227<br />
+request handled by worker with pid 85229</p>
+<p>Alright, last step is getting socket.io involved. Just a couple extra lines for the socket, however, we'll need to add a basic index.html file to actually make the socket calls.</p>
+<p>{% highlight javascript %}<br />
+cluster = require("cluster")<br />
+http = require("http")<br />
+numCPUs = require("os").cpus().length<br />
+if cluster.isMaster<br />
+  i = 0<br />
+  while i &lt; numCPUs     cluster.fork()     i++   cluster.on 'fork', (worker) -&gt;<br />
+    console.log 'forked worker ' + worker.process.pid<br />
+  cluster.on "listening", (worker, address) -&gt;<br />
+    console.log "worker " + worker.process.pid + " is now connected to " + address.address + ":" + address.port<br />
+  cluster.on "exit", (worker, code, signal) -&gt;<br />
+    console.log "worker " + worker.process.pid + " died"<br />
+else<br />
+  app = require("express")()<br />
+  server = require("http").createServer(app)<br />
+  io = require("socket.io").listen(server)<br />
+  server.listen 8000<br />
+  app.get "/", (req, res) -&gt;<br />
+    res.sendfile(__dirname + '/index.html');<br />
+  io.sockets.on "connection", (socket) -&gt;<br />
+    console.log 'socket call handled by worker with pid ' + process.pid<br />
+    socket.emit "news",<br />
+      hello: "world"<br />
+{% endhighlight %}</p>
+<p>&nbsp;</p>
+<p>{% highlight html %}<br />
+&lt;script class="hiddenSpellError" type="text/javascript"&gt;// &lt;![CDATA[<br />
+src&lt;/span&gt;="/socket.io/socket.io.js"&gt;<br />
+// ]]&gt;&lt;/script&gt;&lt;script type="text/javascript"&gt;// &lt;![CDATA[</p>
+<p>// ]]&gt;&lt;/script&gt;<br />
+ var socket = io.connect('http://localhost');<br />
+ socket.on('news', function (data) {<br />
+ console.log(data);<br />
+ socket.emit('my other event', { my: 'data' });<br />
+ });<br />
+// ]]&gt;&lt;/script&gt;<br />
+{% endhighlight %}</p>
+<p>When I run this code, problems start to appear. Specifically, the following message shows up in my output</p>
+<p><span style="color:#ff0000;">warn - client not handshaken client should reconnect</span></p>
+<p>Not surprisingly, we have issues with sockets appearing disconnected. Socket.io defaults to storing its open sockets in an in-memory store. As a result, sockets in other processes have no access to the information. We can easily fix the problem by using the redis store for socket.io. The docs we need are <a href="https://github.com/LearnBoost/Socket.IO/wiki/Configuring-Socket.IO">here</a>.</p>
+<p>With the redis store in place, it looks like this:</p>
+<p>{% highlight javascript %}<br />
+cluster = require("cluster")<br />
+http = require("http")<br />
+numCPUs = require("os").cpus().length<br />
+RedisStore = require("socket.io/lib/stores/redis")<br />
+redis = require("socket.io/node_modules/redis")<br />
+pub = redis.createClient()<br />
+sub = redis.createClient()<br />
+client = redis.createClient()<br />
+if cluster.isMaster<br />
+  i = 0<br />
+  while i &lt; numCPUs     cluster.fork()     i++   cluster.on 'fork', (worker) -&gt;<br />
+    console.log 'forked worker ' + worker.process.pid<br />
+  cluster.on "listening", (worker, address) -&gt;<br />
+    console.log "worker " + worker.process.pid + " is now connected to " + address.address + ":" + address.port<br />
+  cluster.on "exit", (worker, code, signal) -&gt;<br />
+    console.log "worker " + worker.process.pid + " died"<br />
+else<br />
+  app = require("express")()<br />
+  server = require("http").createServer(app)<br />
+  io = require("socket.io").listen(server)<br />
+  io.set "store", new RedisStore(<br />
+    redisPub: pub<br />
+    redisSub: sub<br />
+    redisClient: client<br />
+  )<br />
+  server.listen 8000<br />
+  app.get "/", (req, res) -&gt;<br />
+    res.sendfile(__dirname + '/index.html');<br />
+  io.sockets.on "connection", (socket) -&gt;<br />
+    console.log 'socket call handled by worker with pid ' + process.pid<br />
+    socket.emit "news",<br />
+      hello: "world"<br />
+{% endhighlight %}</p>

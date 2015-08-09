@@ -1,0 +1,75 @@
+---
+layout: post
+title: Heroku Scheduler with Coffeescript Jobs
+date: 2013-04-24 08:05:24.000000000 -05:00
+categories:
+- Node.js
+tags:
+- coffeescript
+- heroku
+- node.js
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '25054220'
+  _publicize_pending: '1'
+  _wpas_done_881585: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:1471181839;b:1;}}
+  publicize_twitter_user: adamnengland
+  _wpas_done_881586: '1'
+  _wpas_done_881584: '1'
+  _wpas_skip_881585: '1'
+  _wpas_skip_881586: '1'
+  _wpas_skip_881584: '1'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>Heroku provides a <a href="https://addons.heroku.com/scheduler">free add on for running scheduled jobs</a>.  This provides a convenient way to run scheduled tasks in an on-demand dyno, freeing your web dynos to focus on user requests.   I'm currently writing a node.js application in coffeescript that has some modest job scheduling needs.</p>
+<p>Heroku's documentation is a little thin on explaining this particular use case, however a good starting point is reading the <a href="https://devcenter.heroku.com/articles/one-off-dynos">One-Off Dyno Documentation</a>.  The important concept to remember is that if you can run your command using "heroku run xxx", you'll be able to run it in the scheduler.  These one-off dynos should be place in a bin/ directory in your project root.</p>
+<p>My first attempt is below.  Note that we set it to use our node install to run (Heroku installs node at /app/bin/node).</p>
+<p>{% highlight bash %}
+#! /app/bin/node
+require('../server/jobs/revenueCalculator').runOnce()
+{% endhighlight %}</p>
+<p>Deploy to heroku and run the following command using the toolbelt.  We get an error immediately.</p>
+<p>{% highlight bash %}<br />
+heroku run runJob<br />
+Error: Cannot find module '../server/jobs/revenueCalculator'<br />
+{% endhighlight %}</p>
+<p>Next I wanted to try running interactively, using the coffeescript interpreter:</p>
+<p>{% highlight bash %}<br />
+heroku run coffee<br />
+Running `coffee` attached to terminal... up, run.6960<br />
+coffee&gt; x = require('./server/jobs/revenueCalculator')<br />
+{ start: [Function], runOnce: [Function] }<br />
+coffee&gt; x.runOnce()<br />
+Job Started<br />
+Job Complete<br />
+{% endhighlight %}</p>
+<p>Now we seem to have zeroed in on the problem.  Perhaps the script will work if we run it using coffeescript, rather than the node executable.  Edit bin/nightlyJob as follows:</p>
+<p>{% highlight bash %}<br />
+#! /app/node_modules/.bin/coffee<br />
+job = require '../server/jobs/revenueCalculator'<br />
+job.runOnce()<br />
+{% endhighlight %}</p>
+<p>Deploy to heroku and run.</p>
+<p>{% highlight bash %}<br />
+heroku run nightlyJob<br />
+Running `nightlyJob` attached to terminal... up, run.9139<br />
+Job Started<br />
+Job Complete<br />
+{% endhighlight %}</p>
+<p>Using #! /app/node_modules/.bin/coffee in a standalone script to call the application code seems to do the trick. Now, lets add the heroku scheduler to our app, and configure the job to run nightly.</p>
+<p>{% highlight bash %}<br />
+heroku addons:add scheduler:standard<br />
+heroku addons:open scheduler<br />
+{% endhighlight %}</p>
+<p>A browser should pop open, and we can schedule our nightly job. <a href="https://adamnengland.files.wordpress.com/2013/04/screen-shot-2013-04-23-at-11-07-48-am.png"><img class="alignnone size-medium wp-image-225" alt="Screen Shot 2013-04-23 at 11.07.48 AM" src="assets/screen-shot-2013-04-23-at-11-07-48-am.png?w=300" width="300" height="103" /></a></p>
+<p>Thats all folks.</p>

@@ -1,0 +1,238 @@
+---
+layout: post
+title: 'Benchmarks: acts-as-taggable-on vs PostgreSQL Arrays'
+date: 2014-02-19 12:40:54.000000000 -06:00
+categories:
+- Rails
+tags:
+- benchmark
+- performance
+- postgres
+- rails
+- ruby
+- sourcecode
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '25054220'
+  _publicize_pending: '1'
+  publicize_facebook_url: https://facebook.com/10203275224029319
+  publicize_linkedin_url: http://www.linkedin.com/updates?discuss=&scope=22010808&stype=M&topic=5841974504305213440&type=U&a=FkNN
+  _wpas_done_5885047: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:1471181839;b:1;}}
+  publicize_twitter_user: adamnengland
+  publicize_twitter_url: http://t.co/GzPTGUyPpm
+  _wpas_done_881586: '1'
+  _wpas_done_881584: '1'
+  publicize_tumblr_url: http://adamnengland.tumblr.com.tumblr.com/post/77191790660
+  _wpas_done_4227152: '1'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  <p>While looking at performance optimizations for a rails project, I noticed these lines in my debug console:</p>
+---
+<p>While looking at performance optimizations for a rails project, I noticed these lines in my debug console:</p>
+<p>{% highlight bash %}
+  ActsAsTaggableOn::Tag Load (0.5ms)  SELECT "tags".* FROM "tags" INNER JOIN "taggings" ON "tags"."id" = "taggings"."tag_id" WHERE "taggings"."taggable_id" = $1 AND "taggings"."taggable_type" = $2 AND (taggings.context = ('tags'))  [["taggable_id", 103], ["taggable_type", "Prediction"]]<br />
+{% endhighlight %}</p>
+<p>This makes sense, my project is using <a href="https://github.com/mbleigh/acts-as-taggable-on">acts-as-taggable-on</a> to tag models.  However, our tagging needs are quite simple, and since we are using postgres, I wondered whether using postgres array types might be more efficient.  To get a feel for the basic concept, see 41 studio's <a href="http://blog.41studio.com/2013/12/14/tagging-in-rails-4-using-postgresql-arrays/">writeup</a>.</p>
+<p>However, before going through all the trouble, I'd like to see if the performance gains are appreciable or not.  Using rails benchmark functionality, we can do this pretty easily.</p>
+<p>Full source code is available at https://github.com/adamnengland/rails-tag-bench, or follow along for the step by step for the full experience.</p>
+<p><strong>Getting Started</strong><br />
+You'll need</p>
+<ul>
+<li>Rails 4.0.2</li>
+<li>Ruby 2.0.0</li>
+<li>Postgres.app on OS X - though you can certainly modify this to work with any postgres install</li>
+</ul>
+<p><strong>Create a new Rails project</strong><br />
+{% highlight bash %}<br />
+rails new rails-tag-bench<br />
+cd rails-tag-bench<br />
+{% endhighlight %}</p>
+<p>Open gemfile and add<br />
+gem 'pg', '0.17.1'</p>
+<p>(I had to do this first:  gem install pg -- --with-pg-config=/Applications/Postgres93.app/Contents/MacOS/bin/pg_config)</p>
+<p>Then bundle install to get your dependencies.</p>
+<p>Replace config/database.yml with<br />
+{% highlight ruby %}<br />
+development:<br />
+  adapter: postgresql<br />
+  encoding: unicode<br />
+  database: rails_tag_bench<br />
+  pool: 5<br />
+  username: rails_tag_bench<br />
+  password:</p>
+<p>test:<br />
+  adapter: sqlite3<br />
+  database: db/test.sqlite3<br />
+  pool: 5<br />
+  timeout: 5000</p>
+<p>production:<br />
+  adapter: sqlite3<br />
+  database: db/production.sqlite3<br />
+  pool: 5<br />
+  timeout: 5000<br />
+{% endhighlight %}</p>
+<p>We'll need a database user, so open up postgres and issue:<br />
+{% highlight bash %}<br />
+create user rails_tag_bench with SUPERUSER;<br />
+{% endhighlight %}</p>
+<p>Okay, lets create the database</p>
+<p>{% highlight bash %}<br />
+rake db:create<br />
+{% endhighlight %}</p>
+<p>In postgres type<br />
+\c rails_tag_bench<br />
+to confirm that the database is set up.</p>
+<p>To do this, we'll also need acts-as-taggable-on, so update the gemfile</p>
+<p>gem 'acts-as-taggable-on', '2.4.1'</p>
+<p>and bundle install</p>
+<p>{% highlight bash %}<br />
+rails g acts_as_taggable_on:migration<br />
+rake db:migrate<br />
+{% endhighlight %}</p>
+<p>Lets start with the taggable version:<br />
+rails g model ArticleTaggable title:string body:text<br />
+rake db:migrate</p>
+<p>open the created article_taggable.rb and edit<br />
+{% highlight ruby %}<br />
+class ArticleTaggable &lt; ActiveRecord::Base<br />
+  acts_as_taggable<br />
+end<br />
+{% endhighlight %}</p>
+<p>Lets setup the benchmark:<br />
+{% highlight bash %}<br />
+rails g task bench<br />
+{% endhighlight %}</p>
+<p>Fill out the body like so</p>
+<p>{% highlight ruby %}<br />
+require 'benchmark'<br />
+namespace :bench do<br />
+  task writes: :environment do<br />
+    Benchmark.bmbm do |x|<br />
+      x.report("Benchmark 1") do<br />
+        1_000.times do<br />
+          ArticleTaggable.create(:title =&gt; ('a'..'z').to_a.shuffle[0,8].join, :body =&gt; ('a'..'z').to_a.shuffle[0,100].join, :tag_list =&gt; ['TAG1'])<br />
+        end<br />
+      end<br />
+    end<br />
+  end</p>
+<p>  task reads: :environment do<br />
+    Benchmark.bmbm do |x|<br />
+      x.report("Benchmark 1") do<br />
+        1_000.times do<br />
+          ArticleTaggable.includes(:tags).find_by_id(Random.new.rand(1000..2000));<br />
+        end<br />
+      end<br />
+    end<br />
+  end<br />
+end<br />
+{% endhighlight %}</p>
+<p>You can run the benchmarks like so:</p>
+<p>{% highlight bash %}<br />
+rake db:reset<br />
+rake bench:writes<br />
+rake bench:reads<br />
+{% endhighlight %}</p>
+<p>Which should give you output like this:</p>
+<p>{% highlight bash %}<br />
+➜  rails-tag-bench  rake bench:writes<br />
+Rehearsal -----------------------------------------------<br />
+Benchmark 1   8.620000   0.340000   8.960000 ( 10.716852)<br />
+-------------------------------------- total: 8.960000sec</p>
+<p>                  user     system      total        real<br />
+Benchmark 1   8.540000   0.320000   8.860000 ( 10.543746)<br />
+➜  rails-tag-bench  rake bench:reads<br />
+Rehearsal -----------------------------------------------<br />
+Benchmark 1   2.930000   0.160000   3.090000 (  3.906484)<br />
+-------------------------------------- total: 3.090000sec</p>
+<p>                  user     system      total        real<br />
+Benchmark 1   2.880000   0.150000   3.030000 (  3.825437)<br />
+{% endhighlight %}</p>
+<p>So, on my macbook air, we wrote 1000 records in 10.5437 seconds, and read 1000 records in 3.8254 seconds with acts-as-taggable-on</p>
+<p>Now, lets implement the example using postgres arrays, and see where we land</p>
+<p>{% highlight bash %}<br />
+rails g model ArticlePa title:string body:text tags:string<br />
+{% endhighlight %}</p>
+<p>Edit the new migration as follows<br />
+{% highlight ruby %}<br />
+class CreateArticlePas &lt; ActiveRecord::Migration<br />
+  def change<br />
+    create_table :article_pas do |t|<br />
+      t.string :title<br />
+      t.text :body<br />
+      t.string :tags, array: true, default: []</p>
+<p>      t.timestamps<br />
+    end<br />
+  end<br />
+end<br />
+{% endhighlight %}</p>
+<p>{% highlight bash %}<br />
+rake db:migrate<br />
+{% endhighlight %}</p>
+<p>update our benchmarking code:</p>
+<p>{% highlight ruby %}<br />
+require 'benchmark'<br />
+namespace :bench do<br />
+  task writes: :environment do<br />
+    Benchmark.bmbm do |x|<br />
+      x.report("Using Taggable") do<br />
+        1_000.times do<br />
+          ArticleTaggable.create(:title =&gt; ('a'..'z').to_a.shuffle[0,8].join, :body =&gt; ('a'..'z').to_a.shuffle[0,100].join, :tag_list =&gt; ['TAG1'])<br />
+        end<br />
+      end<br />
+      x.report("Using Postgres Arrays") do<br />
+        1_000.times do<br />
+          ArticlePa.create(:title =&gt; ('a'..'z').to_a.shuffle[0,8].join, :body =&gt; ('a'..'z').to_a.shuffle[0,100].join, :tags =&gt; ['TAG1'])<br />
+        end<br />
+      end<br />
+    end<br />
+  end</p>
+<p>  task reads: :environment do<br />
+    Benchmark.bmbm do |x|<br />
+      x.report("Using Taggable") do<br />
+        1_000.times do<br />
+          ArticleTaggable.includes(:tags).find_by_id(Random.new.rand(1000..2000));<br />
+        end<br />
+      end<br />
+      x.report("Using Postgres Arrays") do<br />
+        1_000.times do<br />
+          ArticlePa.find_by_id(Random.new.rand(1000..2000));<br />
+        end<br />
+      end<br />
+    end<br />
+  end<br />
+end<br />
+{% endhighlight %}</p>
+<p>{% highlight bash %}<br />
+rake db:reset<br />
+rake bench:writes<br />
+rake bench:reads<br />
+{% endhighlight %}</p>
+<p><strong>The Results</strong><br />
+{% highlight bash %}<br />
+➜  rails-tag-bench  rake bench:writes<br />
+Rehearsal ---------------------------------------------------------<br />
+Using Taggable          8.520000   0.330000   8.850000 ( 10.532700)<br />
+Using Postgres Arrays   1.460000   0.110000   1.570000 (  2.082705)<br />
+----------------------------------------------- total: 10.420000sec</p>
+<p>                            user     system      total        real<br />
+Using Taggable          8.340000   0.310000   8.650000 ( 10.221277)<br />
+Using Postgres Arrays   1.410000   0.110000   1.520000 (  2.012559)</p>
+<p>➜  rails-tag-bench  rake bench:reads<br />
+Rehearsal ---------------------------------------------------------<br />
+Using Taggable          2.920000   0.160000   3.080000 (  3.898911)<br />
+Using Postgres Arrays   0.420000   0.060000   0.480000 (  0.700684)<br />
+------------------------------------------------ total: 3.560000sec</p>
+<p>                            user     system      total        real<br />
+Using Taggable          2.870000   0.140000   3.010000 (  3.805598)<br />
+Using Postgres Arrays   0.400000   0.060000   0.460000 (  0.677917)<br />
+{% endhighlight %}</p>
+<p>For my money, the postgres arrays appear to be much faster, which comes as little surprise.  By cutting out all the additional joins, we greatly reduce the query time.</p>
+<p>However, it is important to note that this isn't an apples-to-apples comparison.  Acts-As-Taggable-On provides a lot of functionality that simple arrays do not provide.  More importantly, this locks you into the postgres database, which may or may not be a problem for you.  However, if you really have simplistic tag needs, the performance improvements might be worth it.</p>

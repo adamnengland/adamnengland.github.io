@@ -1,0 +1,102 @@
+---
+layout: post
+title: Heroku vs NodeJitsu vs Appfog
+date: 2013-07-08 08:05:32.000000000 -05:00
+categories:
+- Node
+- Node.js
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '25054220'
+  _publicize_pending: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:1471181839;b:1;}}
+  _wpas_done_881585: '1'
+  publicize_twitter_user: adamnengland
+  _wpas_done_881586: '1'
+  _wpas_done_881584: '1'
+  _wpas_skip_881585: '1'
+  _wpas_skip_881586: '1'
+  _wpas_skip_881584: '1'
+  _wpas_skip_4227152: '1'
+  _oembed_e37f100ae1c51fd00fbe0fa5bedfcb18: '{{unknown}}'
+  _oembed_cf202f48d07241ea25155ce294f09d43: '{{unknown}}'
+  _oembed_4b30f54efe9f3cbe1aeebec61b16f21d: '{{unknown}}'
+  _oembed_31f32b9694522942d276d7763eccaa1c: '{{unknown}}'
+  _oembed_f61a8e4565c4e59a48f843ffd14616e2: '{{unknown}}'
+  _oembed_1390d9798f611833c83de04681d7afdc: '{{unknown}}'
+  _oembed_7f1e033b3766685623b3b58ba133e529: '{{unknown}}'
+  _oembed_4a2254e03474722cddd04803321b8e1c: '{{unknown}}'
+  _oembed_af90c13d76b9bf9a7928e90abee378be: '{{unknown}}'
+  _oembed_42dd3745d87a743ad95a2a4495cd1a70: '{{unknown}}'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>[polldaddy poll=7233406]</p>
+<p>For the next few months, I'll be working with the team at <a href="http://www.localruckus.com" target="_blank">LocalRuckus</a>, building a new Node.js API and application.  As a small shop with no dedicated Sys Admin or Dev Ops, its essential that we find Node.js hosting that is flexible, fast, and cost-effective.  I've been considering three major players in the Node.js hosting scene, <a href="http://heroku.com" target="_blank">Heroku</a>, <a href="http://nodejitsu.com" target="_blank">Nodejitsu</a>, and <a href="http://appfog.com" target="_blank">Appfog</a>.  There are some good comparisons out there (I especially like <a href="http://saewitz.com/node-dot-js-websocket-hosting-roundup/" target="_blank">Daniel Saewitz's article</a>), but I wanted to share my 2 cents.</p>
+<h3>Value for Development</h3>
+<p>Heroku provides a great feature for development/sandbox apps - your first dyno is FREE.  Combine this with the starter Postgres package, and you can have a development version of you app up and running for $0/month.</p>
+<p>Nodejitsu does not offer a free tier, so you are on the hook for paying for pet projects, etc.  That said, their pricing starts at $9/mo for a micro package, and scales up pretty gently from there.</p>
+<p>Appfog provides a pretty great package for trying out an app.  You can provision your database, caching server, queue server, and application servers in a few clicks, all managed from one central dashboard.</p>
+<p><span style="color:#339966;">Winner:  Appfog</span></p>
+<h3>Value for Production</h3>
+<p>Heroku pricing scales linearly with your traffic.  Using a simple slider, you can add new dynos to your application.  Each new dyno runs $35/mo, however, there is no commitment - you can scale up for brief spikes, and scale down if traffic subsides.</p>
+<p>Nodejitsu and Appfog, on the other hand have fixed monthly prices.</p>
+<p>Nodejitsu prices based on drones, which seem to offer 256MB RAM and processing power roughly equivalent to half a heroku dyno.</p>
+<p>Appfog prices based on RAM, which creates a bit of a problem.  While 2GB of memory can be had for $20/mo, moving up to 4GB is a rather steep $100/mo.</p>
+<p><span style="color:#339966;">Winner: Heroku</span></p>
+<h3>Deployment</h3>
+<p>Heroku - Deploy to a git repository</p>
+<p>Appfog - Use the downloadable af tool to push updates</p>
+<p>NodeJitsu - Use the jitsu tool or git integration.</p>
+<p><span style="color:#339966;">Winner: Nodejitsu</span></p>
+<h3>Database</h3>
+<p>Heroku leverages expertise in Postgres, providing plans that scale with your application, including free database levels for getting started.  Production databases support 1TB of data, starting at $50/month.  If you prefer another database platform, Add-Ons are available for Redis, Mongo, Couchdb, ClearDB, JustOneDB, and Amazon RDS.</p>
+<p>Nodejitsu continues to take a fairly minimalist approach, with no built-in database.  They provide Add-Ons for Mongo, Redis, and CouchDb.</p>
+<p>Appfog allows you to use your service instances to host Redis, Mongo, Postgres, or MySql databases.  They also provide add-ons for Mongo and ClearDB.  The main knock here is that your database shares the processing and memory quotas with your other services, and I'm skeptical that such an approach could support a high traffic app.</p>
+<p><span style="color:#339966;">Winner: Heroku. <span style="color:#000000;">Production quality Postgres, with great Add-Ons for a variety of other databases.</span></span></p>
+<h3>Other Languages</h3>
+<table border="1">
+<tbody>
+<tr>
+<th>Heroku</th>
+<th>Nodejitsu</th>
+<th>Appfog</th>
+</tr>
+<tr>
+<td>
+<ul>
+<li>Ruby</li>
+<li>Java</li>
+<li>Python</li>
+<li>Clojure</li>
+<li>Scala</li>
+<li>Play</li>
+<li>Php</li>
+</ul>
+</td>
+<td>
+<ul>None</ul>
+</td>
+<td>
+<ul>
+<li>Ruby</li>
+<li>Java</li>
+<li>Python</li>
+<li>Php</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><span style="color:#339966;">Tie: Appfog &amp; Heroku</span>. Appfog's PHP support opens a lot of opportunities (such as hosting Wordpress), however, Appfog seems to have trouble keeping their runtimes up to date. As of July 2013, Node.js was only up to version 8. Heroku provides good language options, and a serious commitment to keeping the runtimes up to date.</p>
+<h3>Other Considerations and Final Thoughts</h3>
+<p>An important consideration for many node apps is web socket support.  Nodejitsu has it, the others don't.  If you need this feature, your choice is clear.  At this point, Heroku's flexibility, large community, and great add-ons make it my go-to for applications, however, I think Appfog has put together a great offering, and I'm looking forward to using it more in the future.</p>

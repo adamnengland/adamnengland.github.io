@@ -1,0 +1,115 @@
+---
+layout: post
+title: Digg oAuth using Scribe
+date: 2012-04-18 09:00:23.000000000 -05:00
+categories:
+- REST
+tags:
+- java
+- oauth
+- REST
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '25054220'
+  _wpas_done_linkedin: '1'
+  publicize_results: a:2:{s:7:"twitter";a:1:{i:109154946;a:2:{s:7:"user_id";s:12:"adamnengland";s:7:"post_id";s:18:"192613757686513666";}}s:2:"fb";a:1:{i:1471181839;a:2:{s:7:"user_id";s:10:"1471181839";s:7:"post_id";s:13:"3721428562226";}}}
+  _wpas_done_twitter: '1'
+  _wpas_done_fb: '1'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  <p>I really like the <a href="https://github.com/fernandezpablo85/scribe-java">Scribe</a> library for doing oAuth in Java.  It uses a fluent API, a very slim dependency structure, and is ready to use in android apps.  So, when I needed to connect to Digg's API for a Java app, I looked at Scribe first.
+  Unfortunately, Scribe doesn't support Digg out of the box (it does however, support Facebook, Yahoo, FourSquare, Vimeo, and many others).  Adding support for a new service is simple.
+  Lets start with a sample client application:</p>
+---
+I really like the <a href="https://github.com/fernandezpablo85/scribe-java">Scribe</a> library for doing oAuth in Java.  It uses a fluent API, a very slim dependency structure, and is ready to use in android apps.  So, when I needed to connect to Digg's API for a Java app, I looked at Scribe first.
+
+
+
+
+Unfortunately, Scribe doesn't support Digg out of the box (it does however, support Facebook, Yahoo, FourSquare, Vimeo, and many others).  Adding support for a new service is simple.  
+
+Lets start with a sample client application:
+{% highlight java %}
+package org.scribe.examples;
+import java.util.Scanner;
+import org.scribe.builder.ServiceBuilder;
+import org.scribe.builder.api.DiggApi;
+import org.scribe.model.*;
+import org.scribe.oauth.OAuthService;
+public class DiggExample {
+  private static final String NETWORK_NAME = "Digg";
+  private static final String PROTECTED_RESOURCE_URL = "http://services.digg.com/2.0/comment.digg";
+  public static void main(String[] args) {
+    // Replace these with your own api key and secret
+    String apiKey = "myKey";
+    String apiSecret = "mySecret";
+    OAuthService service = new ServiceBuilder().provider(DiggApi.class).apiKey(apiKey).apiSecret(apiSecret).build();
+    Scanner in = new Scanner(System.in);
+    System.out.println("=== " + NETWORK_NAME + "'s OAuth Workflow ===");
+    System.out.println();
+    // Obtain the Request Token
+    System.out.println("Fetching the Request Token...");
+    Token requestToken = service.getRequestToken();
+    System.out.println("Got the Request Token!");
+    System.out.println();
+    // Obtain the Authorization URL
+    System.out.println("Fetching the Authorization URL...");
+    String authorizationUrl = service.getAuthorizationUrl(requestToken);
+    System.out.println("Got the Authorization URL!");
+    System.out.println("Now go and authorize Scribe here:");
+    System.out.println(authorizationUrl);
+    System.out.println("And paste the authorization code here");
+    System.out.print(">>");
+    Verifier verifier = new Verifier(in.nextLine());
+    System.out.println();
+    // Trade the Request Token and Verfier for the Access Token
+    System.out.println("Trading the Request Token for an Access Token...");
+    Token accessToken = service.getAccessToken(requestToken, verifier);
+    System.out.println("Got the Access Token!");
+    System.out.println("(if your curious it looks like this: " + accessToken + " )");
+    System.out.println();
+    // Now let's go and ask for a protected resource!
+    System.out.println("Now we're going to access a protected resource...");
+    OAuthRequest request = new OAuthRequest(Verb.POST, PROTECTED_RESOURCE_URL);
+    request.addBodyParameter("comment_id", "20100729223726:4fef610331ee46a3b5cbd740bf71313e");
+    service.signRequest(accessToken, request);
+    Response response = request.send();
+    System.out.println("Got it! Lets see what we found...");
+    System.out.println();
+    System.out.println(response.getCode());
+    System.out.println(response.getBody());
+    System.out.println();
+    System.out.println("Thats it man! Go and build something awesome with Scribe! :)");
+  }
+}
+{% endhighlight %}
+Simple enough - pay special attention to line 18. This is scribe's fluent api for setting up the oAuth provider. After that, we have a pretty simple workflow - get a request token, ask the user to authorize the application, and trade the request token in for an access token.
+The code to make this all work is even easier. Scribe provides 2 base classes - DefaultApi10a and DefaultApi20 (for oAuth v1.0a and oAuth v2 respectively). Since Digg's api uses oAuth v1, we just extend DefaultApi10a and plug in the right info, like so:
+{% highlight java %}
+package org.scribe.builder.api;
+import org.scribe.model.Token;
+public class DiggApi extends DefaultApi10a {
+  private static final String AUTHORIZATION_URL = "http://digg.com/oauth/authorize?oauth_token=%s";
+  private static final String BASE_URL = "http://services.digg.com/oauth/";
+  @Override
+  public String getRequestTokenEndpoint() {
+    return BASE_URL + "request_token";
+  }
+  @Override
+  public String getAccessTokenEndpoint() {
+    return BASE_URL + "access_token";
+  }
+  @Override
+  public String getAuthorizationUrl(Token requestToken) {
+    return String.format(AUTHORIZATION_URL, requestToken.getToken());
+  }
+}
+{% endhighlight %}
+Thats it, we're done.  You can get the code <a href="https://github.com/adamnengland/scribe-java/">here</a>

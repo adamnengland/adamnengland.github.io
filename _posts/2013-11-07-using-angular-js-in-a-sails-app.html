@@ -1,0 +1,62 @@
+---
+layout: post
+title: Using Angular.js in a Sails App
+date: 2013-11-07 08:47:11.000000000 -06:00
+categories: []
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '25054220'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>I'm feeling adventurous this week, and diving into sails.js</p>
+<p>The rest of this post assumes that you already have node/npm installed.</p>
+<p>Install sails.js<br />
+{% highlight bash %}<br />
+sudo npm -g install sails<br />
+{% endhighlight %}</p>
+<p>Create our Project<br />
+{% highlight bash %}<br />
+sails new invenpuppy<br />
+cd invenpuppy<br />
+sails lift<br />
+{% endhighlight %}</p>
+<p>Great, our app is running on http://localhost:1337/.  Lets customize the homepage, and add the libraries we will need for the front-end:  Bootstrap 3, Angular.js, and Jquery.  Change your home/index.ejs to match the following - an adorable 2-column layout, complete with a puppy.</p>
+<p>{% highlight html %}<br />
+&lt;!doctype html&gt;<br />
+&lt;html ng-app='InvenPuppy'&gt;<br />
+&lt;head&gt;<br />
+        &lt;meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" /&gt;<br />
+        &lt;title&gt;InvenPuppy&lt;/title&gt;<br />
+        &lt;link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"&gt;</p>
+<p>        &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"&gt;&lt;/script&gt;<br />
+        &lt;script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"&gt;&lt;/script&gt;<br />
+        &lt;script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"&gt;&lt;/script&gt;<br />
+&lt;/head&gt;<br />
+&lt;body&gt;<br />
+    &lt;div class="container"&gt;<br />
+        &lt;div class="row"&gt;<br />
+            &lt;div class="brand col-md-3"&gt;<br />
+                &lt;a id="logo" href="/"&gt;&lt;img src="/images/dog-256.png"&gt;&lt;/a&gt;<br />
+            &lt;/div&gt;<br />
+            &lt;div class="col-md-9"&gt;<br />
+                &lt;div ng-view&gt;&lt;/div&gt;<br />
+            &lt;/div&gt;<br />
+        &lt;/div&gt;<br />
+    &lt;/div&gt;<br />
+&lt;/body&gt;<br />
+&lt;/html&gt;<br />
+{% endhighlight %}</p>
+<p>Now, we are gonna need a REST api to handle all of the puppies we are going to create.</p>
+<p>{% highlight bash %}<br />
+sails generate puppy<br />
+{% endhighlight %}</p>

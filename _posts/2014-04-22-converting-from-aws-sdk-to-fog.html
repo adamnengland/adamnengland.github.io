@@ -1,0 +1,42 @@
+---
+layout: post
+title: Converting from Aws-Sdk to Fog
+date: 2014-04-22 10:06:55.000000000 -05:00
+categories: []
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '25054220'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>Knoda uses a pretty simple setup for managing our user &amp; group avatars.  Since we run on heroku, local storage is unavailable.  All user images are stored on s3.  We use <a href="https://github.com/thoughtbot/paperclip">paperclip</a> to manage our images, and the aws-sdk gem to link paperclip to s3.</p>
+<p>While the aws-sdk gem is fine for most usage, it has two issues I'd like to avoid</p>
+<ol>
+<li>Thread Safety - aws-sdk has some <a href="https://github.com/mperham/sidekiq/wiki/Problems-and-Troubleshooting#thread-safe-libraries">problems</a> with thread safety, which can be a problem if you want to use sidekiq (you could always use resque, but sidekiq is faster)</li>
+<li>Abstraction - Obviously, aws-sdk is only useful for s3.  I'd like to have an abstraction here to allow us to use other storage providers in the future</li>
+</ol>
+<p>Fog provides a good solution for both of these problem.  Lets see how easy it is to convert from aws-sdk to fog.</p>
+<p>Lets look at our paperclip initializer (mine is called paperclip.rb)</p>
+<p>{% highlight ruby %}
+if Rails.env.production?<br />
+  config.paperclip_defaults = {<br />
+    :storage =&gt; :s3,<br />
+    :s3_credentials =&gt; {<br />
+      :bucket =&gt; ENV['S3_BUCKET_NAME'],<br />
+      :access_key_id =&gt; ENV['AWS_ACCESS_KEY_ID'],<br />
+      :secret_access_key =&gt; ENV['AWS_SECRET_ACCESS_KEY']<br />
+    }<br />
+  }<br />
+  Paperclip::Attachment.default_options[:url] = ':s3_domain_url'<br />
+  Paperclip::Attachment.default_options[:path] = '/:class/:attachment/:id_partition/:style/:filename'<br />
+end<br />
+{% endhighlight %}</p>

@@ -1,0 +1,72 @@
+---
+layout: post
+title: Code School's "Try R"
+date: 2013-01-24 08:15:22.000000000 -06:00
+categories: []
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _oembed_be681395f951d3b3ee075baeec8e91d9: '{{unknown}}'
+  _edit_last: '25054220'
+  _publicize_pending: '1'
+  publicize_twitter_user: adamnengland
+  _wpas_done_881586: '1'
+  _publicize_done_external: a:1:{s:7:"twitter";a:1:{i:109154946;b:1;}}
+  _wpas_done_881584: '1'
+  _oembed_d8ef6c4c669b42a582139d0ef1897d06: '{{unknown}}'
+  _oembed_fa5393025612ff1a73cc9882914b4cfb: '{{unknown}}'
+  _oembed_8c214b5c9fd5c53425103b77af5a32e5: '{{unknown}}'
+  _oembed_ed7db761e652c0cd60d543fae3b2e51f: '{{unknown}}'
+  _oembed_cd2cdfe04571946753e54b98648cb624: '{{unknown}}'
+  _oembed_7fd21881a32e7732a755744149d4836b: '{{unknown}}'
+  _oembed_803cedad7eed277080d18b157e690fc1: '{{unknown}}'
+  _oembed_e7cc837c0fb1c6928b3745b045aecd47: '{{unknown}}'
+  _oembed_f303f1c491e59cad662523fd5a332a52: '{{unknown}}'
+  _oembed_7d62c32ff0e742fdbf1d0d2f5ce222f1: '{{unknown}}'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>I feel like 2013 holds a lot of data analysis for me, so I'd like to start the year off by learning a language that excels at statistical analysis and visualization.  Enter <a title="R" href="http://www.r-project.org/">R</a>, a language that has gotten quite popular over the past few years.  In the interest of expanding my horizons, I decided to try to learn this using Code School's <a title="Try R" href="http://tryr.codeschool.com/">Try R</a> course.  Code School courses can be a little simplistic if you have programming experience, but since I haven't ever looked at R, it seems appropriate.</p>
+<p><strong>Lesson One:  Using R</strong></p>
+<p>The first lesson covers basic variable assignment, functions, and expressions in the REPL environment.  Pretty simple for anyone with a programming background, but it does introduce the somewhat unusual assignment operator in R:</p>
+<p>{% highlight r %}<br />
+x &lt;- 42<br />
+{% endhighlight %}</p>
+<p>This is going to prove a little confusing, for me, as I've recently been using coffeescript a lot, with its -&gt; operator for defining functions. I keep swapping the two operators during the lesson.</p>
+<p><strong>Lesson Two:  Vectors</strong></p>
+<p>Now we are getting somewhere.  In order for me to do any statistical analysis, I'm going to need some data structures.  Vectors are the fundamental one-dimensional list in R.  Codeschool does an excellent job in this lesson of moving into data visualization early and seamlessly.</p>
+<p>{% highlight r %}<br />
+&gt; vesselsSunk &lt;- c(4, 5, 1)<br />
+&gt; barplot(vesselsSunk)<br />
+{% endhighlight %}</p>
+<p>To be honest, I've never used a language before with a barplot function in the core language. At this point in the lesson, I'm pretty excited to keep going. Lesson 2 covers vector math and plotting.</p>
+<p><strong>Lesson Three: Matrices</strong></p>
+<p>Moving onto two-dimensional data sets.  I can almost feel the correlation coefficients and multiple regressions in my near future.</p>
+<p>It turns out that this is kind of an odd chapter.  We look at basic matrix construction and manipulation.</p>
+<p>{% highlight r %}<br />
+# Construct a matrix<br />
+&gt; elevation &lt;- matrix(0,3,4)<br />
+     [,1] [,2] [,3] [,4]<br />
+[1,]    0    0    0    0<br />
+[2,]    0    0    0    0<br />
+[3,]    0    0    0    0</p>
+<p>#Edit a value<br />
+elevation[2,2] &lt;- 1<br />
+{% endhighlight %}</p>
+<p>I suppose the lesson is successful in showing how to use matrices, but I don't feel that it imparts much insight into the language. Similarly, we are introduced to contour, persp, and image functions, however, they remain fairly magical at the end of the lesson.</p>
+<p><strong>Lesson 4 - Summary Statistics</strong></p>
+<p>Mean, Median, standard deviation.  This one took about 2 minutes to complete, but is obviously very important if you never took statistics.</p>
+<p><strong>Lesson 5,6 - Factors &amp; Data Frames</strong></p>
+<p>R's Factors and Data Frames provide nice ways to group and categorize data.  Once you understand factors, you can group a set of users by age, or other distinguishing characteristics.  I really enjoyed these lessons, very practical.</p>
+<p><strong>Lesson 7 - Real-World Data</strong></p>
+<p>Great finish for the lessons, bit of analysis on real world software piracy data.  We finally got an example of data correlation using R, which I'm pretty excited to use in some data sets I'm looking at.</p>
+<p><strong>Conclusion</strong></p>
+<p>I'd recommend the Try R course to any developer who is interested in data analysis and visualization.    I'd REALLY recommend the course for anyone with an interest in statistics and data analysis who doesn't know anything about programming.  It really is that easy.  Good work Code School.</p>

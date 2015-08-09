@@ -1,0 +1,64 @@
+---
+layout: post
+title: Moving an ActiveRecord Binary field t
+date: 2015-07-20 20:33:09.000000000 -05:00
+categories: []
+tags: []
+status: draft
+type: post
+published: false
+meta: {}
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>So, you made a mistake.  You stored binary files in your postgres database. Now, your database is growing in size, and you feel ashamed.  It starts with something like this:</p>
+<p>{% highlight ruby %}</p>
+<p>create_table "business", force: :cascade do |t|<br />
+  t.binary   "logo"<br />
+end</p>
+<p>{% endhighlight %}</p>
+<p>If you've lived with this for a while, you'll want to migrate your data, which could take hours or days.  To avoid the need for an outage, we'll do this migration in phases.</p>
+<ol>
+<li>Add a new field to hold the carrierwave reference</li>
+<li>Override our attribute accessors to read/write from either location</li>
+</ol>
+<p>Lets start with a schema migration to add the carrierwave support, and wire it up to our model.</p>
+<p>{% highlight ruby %}<br />
+class AddRenderedBodyFileToEventDocument &lt; ActiveRecord::Migration<br />
+  def change<br />
+    add_column :event_documents, :rendered_body_file, :string<br />
+  end<br />
+end</p>
+<p>class Business &lt; ActiveRecord:Base<br />
+  mount_uploader :logo_file, BusinessLogoFileUploader<br />
+end</p>
+<p># app/uploaders/business_logo_file_uploader.rb</p>
+<p>class BusinessLogoFileUploader &lt; CarrierWave::Uploader::Base<br />
+  storage :file</p>
+<p>   def store_dir<br />
+     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"<br />
+   end</p>
+<p>end<br />
+{% endhighlight %}</p>
+<p>Now, we need some way to convert from the database binary storage to carrierwave.  We add a method to our model to wrap this concept.</p>
+<p>{% highlight ruby %}<br />
+class Business &lt; ActiveRecord:Base<br />
+  mount_uploader :logo_file, BusinessLogoFileUploader</p>
+<p>  def convert_to_carrierwave<br />
+    tempfile = Tempfile.new("business_#{id}")<br />
+    tempfile.binmode<br />
+    tempfile &lt;&lt; rendered_body<br />
+    tempfile.rewind<br />
+    self.rendered_body_file = tempfile<br />
+    self.save!<br />
+    tempfile.close<br />
+    tempfile.delete<br />
+  end<br />
+end</p>
+<p>{% endhighlight %}</p>
