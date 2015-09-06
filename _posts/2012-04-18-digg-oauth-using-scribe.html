@@ -17,26 +17,17 @@ meta:
   publicize_results: a:2:{s:7:"twitter";a:1:{i:109154946;a:2:{s:7:"user_id";s:12:"adamnengland";s:7:"post_id";s:18:"192613757686513666";}}s:2:"fb";a:1:{i:1471181839;a:2:{s:7:"user_id";s:10:"1471181839";s:7:"post_id";s:13:"3721428562226";}}}
   _wpas_done_twitter: '1'
   _wpas_done_fb: '1'
-author:
-  login: adamnengland
-  email: adam.n.england@gmail.com
-  display_name: adamnengland
-  first_name: ''
-  last_name: ''
-excerpt: !ruby/object:Hpricot::Doc
-  <p>I really like the <a href="https://github.com/fernandezpablo85/scribe-java">Scribe</a> library for doing oAuth in Java.  It uses a fluent API, a very slim dependency structure, and is ready to use in android apps.  So, when I needed to connect to Digg's API for a Java app, I looked at Scribe first.
-  Unfortunately, Scribe doesn't support Digg out of the box (it does however, support Facebook, Yahoo, FourSquare, Vimeo, and many others).  Adding support for a new service is simple.
-  Lets start with a sample client application:</p>
+author: Adam N England
 ---
 I really like the <a href="https://github.com/fernandezpablo85/scribe-java">Scribe</a> library for doing oAuth in Java.  It uses a fluent API, a very slim dependency structure, and is ready to use in android apps.  So, when I needed to connect to Digg's API for a Java app, I looked at Scribe first.
 
 
 
 
-Unfortunately, Scribe doesn't support Digg out of the box (it does however, support Facebook, Yahoo, FourSquare, Vimeo, and many others).  Adding support for a new service is simple.  
+Unfortunately, Scribe doesn't support Digg out of the box (it does however, support Facebook, Yahoo, FourSquare, Vimeo, and many others).  Adding support for a new service is simple.
 
 Lets start with a sample client application:
-{% highlight java %}
+{% highlight java linenos %}
 package org.scribe.examples;
 import java.util.Scanner;
 import org.scribe.builder.ServiceBuilder;

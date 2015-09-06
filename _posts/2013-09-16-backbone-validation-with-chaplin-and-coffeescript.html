@@ -24,20 +24,13 @@ meta:
     height="258"";s:4:"bits";i:8;s:4:"mime";s:9:"image/png";}
   _oembed_6f6e824e3edbdfdb455843cb34ecb992: '{{unknown}}'
   _oembed_68fbb5e9a6b640970b133374f3300efc: '{{unknown}}'
-author:
-  login: adamnengland
-  email: adam.n.england@gmail.com
-  display_name: adamnengland
-  first_name: ''
-  last_name: ''
-excerpt: !ruby/object:Hpricot::Doc
-  options: {}
+author: Adam N England
 ---
 <p>Any sizable web application needs validation.  Doing it yourself is for the birds, so I wanted to incorporate a backbone plugin to help solve the problem.  For this example I chose to use <a href="http://thedersen.com/projects/backbone-validation/">Backbone.Validation</a>.</p>
 <p>Start with a basic framework. <a href="http://brunch.io/">Brunch Application Assembler</a> is a great way to bootstrap these projects.  I used Paul Miller's  <a href="https://github.com/paulmillr/brunch-with-chaplin">brunch-with-chaplin</a> skeleton.</p>
 <p>brunch new gh:paulmillr/brunch-with-chaplin</p>
 <p>To start up the server, type <em>brunch watch --server</em> and go to <em>http://localhost:3333/</em> in a new browser window. If everything is good, you'll see this:</p>
-<p><a href="https://adamnengland.files.wordpress.com/2013/09/screen-shot-2013-09-06-at-3-25-22-pm.png"><img class="alignnone size-medium wp-image-287" alt="Screen Shot 2013-09-06 at 3.25.22 PM" src="assets/screen-shot-2013-09-06-at-3-25-22-pm.png?w=300" width="300" height="131" /></a></p>
+<p><a href="/assets/screen-shot-2013-09-06-at-3-25-22-pm.png"><img class="alignnone size-medium wp-image-287" alt="Screen Shot 2013-09-06 at 3.25.22 PM" src="/assets/screen-shot-2013-09-06-at-3-25-22-pm.png" width="300" height="131" /></a></p>
 <p>You'll need a basic application to test out our concept, so we'll modify the routes and the controller, and add a new view and template to our project.</p>
 <p>{% highlight javascript %}
 module.exports = (match) -&gt;<br />
@@ -83,7 +76,7 @@ Form = require 'models/form'</p>
 &lt;/form&gt;<br />
 {% endhighlight %}</p>
 <p>With that code in place, lets do a quick checkpoint <em>http://localhost:3333/form</em>.  We should get an ugly view like this:</p>
-<p><a href="https://adamnengland.files.wordpress.com/2013/09/screen-shot-2013-09-06-at-3-50-32-pm.png"><img src="assets/screen-shot-2013-09-06-at-3-50-32-pm.png?w=300" alt="Screen Shot 2013-09-06 at 3.50.32 PM" width="300" height="135" class="alignnone size-medium wp-image-295" /></a></p>
+<p><a href="/assets/screen-shot-2013-09-06-at-3-50-32-pm.png"><img src="/assets/screen-shot-2013-09-06-at-3-50-32-pm.png" alt="Screen Shot 2013-09-06 at 3.50.32 PM" width="300" height="135" class="alignnone size-medium wp-image-295" /></a></p>
 <p>So, we know we want a basic form that can save name, phone, and email.  Following the guidelines on the validation docs https://github.com/thedersen/backbone.validation, lets add the rules to our model.</p>
 <p>{% highlight javascript %}
 BaseModel = require 'models/base/model'</p>

@@ -27,34 +27,32 @@ meta:
   publicize_linkedin_url: https://www.linkedin.com/updates?discuss=&scope=22010808&stype=M&topic=5943368991224455168&type=U&a=lWgu
   _wpas_done_881584: '1'
   _wpas_done_4227152: '1'
-author:
-  login: adamnengland
-  email: adam.n.england@gmail.com
-  display_name: adamnengland
-  first_name: ''
-  last_name: ''
-excerpt: !ruby/object:Hpricot::Doc
-  <p>Rapid Lo-Dash walks you through the basics of setting up your development environment, and using Lo-Dash to work with arrays. We'll see examples of how to use Lo-Dash to work with object, collections, chaining, and get into some basic functional programming concepts.</p>
-  <p><a href="https://adamnengland.files.wordpress.com/2014/11/5-clean-up-your-code-with-lo-dash-chains.png"><img class="alignnone size-medium wp-image-446" src="assets/5-clean-up-your-code-with-lo-dash-chains.png?w=300" alt="5.Clean Up Your Code with Lo-Dash Chains" width="300" height="168" /></a></p>
+author: Adam N England
 ---
-<p>I'm pleased to announce that my newest video series, Rapid Lo-Dash is available for purchase through Packt Publishing.</p>
-<p>You can get all the details and view the free sample here: <a href="https://www.packtpub.com/web-development/rapid-lo-dash-video">Rapid Lo-Dash</a></p>
-<p>If you're a JavaScript developer, and you aren't using <a href="https://lodash.com/">Lo-Dash</a> yet, you really need to check it out. It'll help you write some cleaner, faster, more maintainable code. Don't believe me?  Take a look at this example, and decide which code you would rather maintain.</p>
-<p>{% highlight javascript %}
-var numbers = [1, 2, 3, 4, 5, 6];<br />
-var odd_numbers = [];<br />
-for (var i = 0; i &lt; numbers.length; i++) {<br />
-  if (numbers[i] % 2 == 1) {<br />
-    odd_numbers.push(numbers[i]);<br />
-  }<br />
-}<br />
-{% endhighlight %}</p>
-<p>{% highlight javascript %}
-var numbers = [1, 2, 3, 4, 5, 6];<br />
-var odd_numbers = _.filter(numbers, function(num) {<br />
-	return num % 2 == 1;<br />
-});<br />
-{% endhighlight %}</p>
-<p>Rapid Lo-Dash walks you through the basics of setting up your development environment, and using Lo-Dash to work with arrays. We'll see examples of how to use Lo-Dash to work with object, collections, chaining, and get into some basic functional programming concepts.</p>
-<p><a href="https://adamnengland.files.wordpress.com/2014/11/5-clean-up-your-code-with-lo-dash-chains.png"><img class="alignnone size-medium wp-image-446" src="assets/5-clean-up-your-code-with-lo-dash-chains.png?w=300" alt="5.Clean Up Your Code with Lo-Dash Chains" width="300" height="168" /></a></p>
-<p>Thanks to the team at Packt Publishing for working with me to create this video series - hope you enjoy it.</p>
+I'm pleased to announce that my newest video series, Rapid Lo-Dash is available for purchase through Packt Publishing.
+
+You can get all the details and view the free sample here: <a href="https://www.packtpub.com/web-development/rapid-lo-dash-video">Rapid Lo-Dash</a>
+
+If you're a JavaScript developer, and you aren't using <a href="https://lodash.com/">Lo-Dash</a> yet, you really need to check it out. It'll help you write some cleaner, faster, more maintainable code. Don't believe me?  Take a look at this example, and decide which code you would rather maintain.
+
+{% highlight javascript %}
+var numbers = [1, 2, 3, 4, 5, 6];
+var odd_numbers = [];
+for (var i = 0; i < numbers.length; i++) {
+  if (numbers[i] % 2 == 1) {
+    odd_numbers.push(numbers[i]);
+  }
+}
+{% endhighlight %}
+
+{% highlight javascript %}
+var numbers = [1, 2, 3, 4, 5, 6];
+var odd_numbers = _.filter(numbers, function(num) {
+	return num % 2 == 1;
+});
+{% endhighlight %}
+Rapid Lo-Dash walks you through the basics of setting up your development environment, and using Lo-Dash to work with arrays. We'll see examples of how to use Lo-Dash to work with object, collections, chaining, and get into some basic functional programming concepts.
+
+<a href="/assets/5-clean-up-your-code-with-lo-dash-chains.png"><img class="alignnone size-medium wp-image-446" src="/assets/5-clean-up-your-code-with-lo-dash-chains.png" alt="5.Clean Up Your Code with Lo-Dash Chains" width="300" height="168" /></a>
+
+Thanks to the team at Packt Publishing for working with me to create this video series - hope you enjoy it.

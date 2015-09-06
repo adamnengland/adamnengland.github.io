@@ -4,7 +4,7 @@ layout: default
 
 <div class="home">
   {% if site.theme.header_text %}
-  <div class="call-out" 
+  <div class="call-out"
   style="background-image: url('{{ site.baseurl }}/{{ site.theme.header_text_feature_image }}')">
     {{ site.theme.header_text }}
   </div>
@@ -24,7 +24,7 @@ layout: default
         </p>
       </header>
       <div class="excerpt">
-        {{ post.excerpt }}
+        {{ post.excerpt || post.content | truncatewords:150}}<br />
         <a class="button" href="{{ post.url | prepend: site.baseurl }}">
           {{ site.theme.str_continue_reading }}
         </a>

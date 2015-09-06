@@ -9,16 +9,9 @@ type: post
 published: false
 meta:
   _edit_last: '25054220'
-author:
-  login: adamnengland
-  email: adam.n.england@gmail.com
-  display_name: adamnengland
-  first_name: ''
-  last_name: ''
-excerpt: !ruby/object:Hpricot::Doc
-  options: {}
+author: Adam N England
 ---
-<p><a href="https://adamnengland.files.wordpress.com/2013/11/screen-shot-2013-11-11-at-4-36-29-pm.png"><img class="alignnone size-medium wp-image-344" alt="Screen Shot 2013-11-11 at 4.36.29 PM" src="assets/screen-shot-2013-11-11-at-4-36-29-pm.png?w=251" width="251" height="300" /></a></p>
+<p><a href="/assets/screen-shot-2013-11-11-at-4-36-29-pm.png"><img class="alignnone size-medium wp-image-344" alt="Screen Shot 2013-11-11 at 4.36.29 PM" src="/assets/screen-shot-2013-11-11-at-4-36-29-pm.png251" width="251" height="300" /></a></p>
 <p>&nbsp;</p>
 <p>Alright, I already have node installed, though perhaps not v0.10.13.  I'd prefer not to have multiple node installs running around my system, so I'd like to see if I can set this up through nvm.</p>
 <p>{% highlight bash %}<br />
@@ -32,10 +25,10 @@ $~  nvm use v0.10.13<br />
 Now using node v0.10.13<br />
 {% endhighlight %}</p>
 <p>Okay, we're on node v0.10.13.  Next, we tell titanium where to look for node</p>
-<p><a href="https://adamnengland.files.wordpress.com/2013/11/screen-shot-2013-11-11-at-4-36-53-pm.png"><img class="alignnone size-medium wp-image-345" alt="Screen Shot 2013-11-11 at 4.36.53 PM" src="assets/screen-shot-2013-11-11-at-4-36-53-pm.png?w=300" width="300" height="203" /></a></p>
+<p><a href="/assets/screen-shot-2013-11-11-at-4-36-53-pm.png"><img class="alignnone size-medium wp-image-345" alt="Screen Shot 2013-11-11 at 4.36.53 PM" src="/assets/screen-shot-2013-11-11-at-4-36-53-pm.png" width="300" height="203" /></a></p>
 <p>Easy enough.  Now, relaunch titanium, and see where we are.  I get the following screen, which recognizes that node is installed, but that we still need the CLI.</p>
-<p><a href="https://adamnengland.files.wordpress.com/2013/11/screen-shot-2013-11-11-at-4-41-17-pm.png"><img src="assets/screen-shot-2013-11-11-at-4-41-17-pm.png?w=252" alt="Screen Shot 2013-11-11 at 4.41.17 PM" width="252" height="300" class="alignnone size-medium wp-image-346" /></a></p>
+<p><a href="/assets/screen-shot-2013-11-11-at-4-41-17-pm.png"><img src="/assets/screen-shot-2013-11-11-at-4-41-17-pm.png252" alt="Screen Shot 2013-11-11 at 4.41.17 PM" width="252" height="300" class="alignnone size-medium wp-image-346" /></a></p>
 <p>Click OK to install, and<br />
-<a href="https://adamnengland.files.wordpress.com/2013/11/screen-shot-2013-11-11-at-4-42-44-pm.png"><img src="assets/screen-shot-2013-11-11-at-4-42-44-pm.png?w=300" alt="Screen Shot 2013-11-11 at 4.42.44 PM" width="300" height="215" class="alignnone size-medium wp-image-347" /></a></p>
+<a href="/assets/screen-shot-2013-11-11-at-4-42-44-pm.png"><img src="/assets/screen-shot-2013-11-11-at-4-42-44-pm.png" alt="Screen Shot 2013-11-11 at 4.42.44 PM" width="300" height="215" class="alignnone size-medium wp-image-347" /></a></p>
 <p>Appears that titanium cannot find npm to install it. After thrashing around for a while, I couldn't find any good way around this problem, so take the long route.</p>
 <p>1. Allow Titanium to install its own version of node.</p>

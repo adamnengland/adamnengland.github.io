@@ -23,52 +23,51 @@ meta:
   _wpas_skip_881585: '1'
   _wpas_skip_881586: '1'
   _wpas_skip_881584: '1'
-author:
-  login: adamnengland
-  email: adam.n.england@gmail.com
-  display_name: adamnengland
-  first_name: ''
-  last_name: ''
-excerpt: !ruby/object:Hpricot::Doc
-  options: {}
+author: Adam N England
 ---
-<p>I'm currently building a project using <a href="http://redis.io/">redis</a> as a high performance cache in a node.js application (using the excellent <a href="https://github.com/mranney/node_redis">node_redis</a>). My key values will be fairly large ( between 512b and 1kb). The Redis documentation doesn't specifically warn against keys of this size, but it still seems appropriate to do a benchmark, and see how Redis reacts to large keys (and whether or not 1k is really a <strong>large</strong> key, or just par for the course).</p>
-<p><span style="text-decoration:underline;"><strong>Test Script</strong></span><strong> </strong>(<a href="https://gist.github.com/4076309">source</a>)</p>
-<p>Basically, we insert 1000 records into redis, each with a 10,000 character value. After the writes are all complete, we read each key back from redis.</p>
-<p>{% highlight javascript %}<br />
-redis = require "redis"</p>
-<p>randomString = (length) -&amp;gt;<br />
-  chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'<br />
-  result = ""<br />
-  i = length</p>
-<p>  while i > 0<br />
-    result += chars[Math.round(Math.random() * (chars.length - 1))]<br />
-    --i<br />
-  result</p>
-<p>writeTest = (keyLength) -&amp;gt;<br />
-	console.log "1000 set statements for #{keyLength} character keys"<br />
-	keys = []<br />
-	for x in [1..1000]<br />
-		keys.push randomString(keyLength)<br />
-	startTime = new Date().getTime()<br />
-	for x in keys<br />
-		client.set x, randomString(10000)<br />
-	client.quit -&amp;gt;<br />
-		console.log "1000 keys inserted in #{new Date().getTime() - startTime} ms"<br />
-		readTest(keys)</p>
-<p>readTest = (keys) -&amp;gt;<br />
-	client = redis.createClient()<br />
-	startTime = new Date().getTime()<br />
-	for x in keys<br />
-		client.get x<br />
-	client.quit -&amp;gt;<br />
+I'm currently building a project using <a href="http://redis.io/">redis</a> as a high performance cache in a node.js application (using the excellent <a href="https://github.com/mranney/node_redis">node_redis</a>). My key values will be fairly large ( between 512b and 1kb). The Redis documentation doesn't specifically warn against keys of this size, but it still seems appropriate to do a benchmark, and see how Redis reacts to large keys (and whether or not 1k is really a <strong>large</strong> key, or just par for the course).
+
+<span style="text-decoration:underline;"><strong>Test Script</strong></span><strong> </strong>(<a href="https://gist.github.com/4076309">source</a>)
+
+Basically, we insert 1000 records into redis, each with a 10,000 character value. After the writes are all complete, we read each key back from redis.
+
+{% highlight javascript linenos %}
+redis = require "redis"
+randomString = (length) ->
+  chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  result = ""
+  i = length
+  while i > 0
+    result += chars[Math.round(Math.random() * (chars.length - 1))]
+    --i
+  result
+writeTest = (keyLength) ->
+	console.log "1000 set statements for #{keyLength} character keys"
+	keys = []
+	for x in [1..1000]
+		keys.push randomString(keyLength)
+	startTime = new Date().getTime()
+	for x in keys
+		client.set x, randomString(10000)
+	client.quit ->
+		console.log "1000 keys inserted in #{new Date().getTime() - startTime} ms"
+		readTest(keys)
+readTest = (keys) ->
+	client = redis.createClient()
+	startTime = new Date().getTime()
+	for x in keys
+		client.get x
+	client.quit ->
 		console.log "1000 keys retreived in #{new Date().getTime() - startTime} ms"</p>
-<p>client = redis.createClient()</p>
-<p>client.flushdb -&amp;gt;<br />
-	writeTest(20000)</p>
-<p>{% endhighlight %}</p>
-<p>This test was performed for key lengths of 10, 100, 500, 1000, 2500, 5000, 7500, 10,000, and 20,000 characters. Three runs of each were performed to avoid any fluke results. Without further ado, the results.</p>
-<p><span style="text-decoration:underline;"><strong>Write Performance (in ms)</strong></span></p>
+client = redis.createClient()
+client.flushdb ->
+	writeTest(20000)
+{% endhighlight %}
+
+This test was performed for key lengths of 10, 100, 500, 1000, 2500, 5000, 7500, 10,000, and 20,000 characters. Three runs of each were performed to avoid any fluke results. Without further ado, the results.
+
+<span style="text-decoration:underline;"><strong>Write Performance (in ms)</strong></span>
+
 <table style="border:1px solid black;">
 <tbody>
 <tr style="border:1px solid black;">

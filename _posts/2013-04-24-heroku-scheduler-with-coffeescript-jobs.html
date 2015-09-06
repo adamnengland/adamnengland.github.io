@@ -22,14 +22,7 @@ meta:
   _wpas_skip_881585: '1'
   _wpas_skip_881586: '1'
   _wpas_skip_881584: '1'
-author:
-  login: adamnengland
-  email: adam.n.england@gmail.com
-  display_name: adamnengland
-  first_name: ''
-  last_name: ''
-excerpt: !ruby/object:Hpricot::Doc
-  options: {}
+author: Adam N England
 ---
 <p>Heroku provides a <a href="https://addons.heroku.com/scheduler">free add on for running scheduled jobs</a>.  This provides a convenient way to run scheduled tasks in an on-demand dyno, freeing your web dynos to focus on user requests.   I'm currently writing a node.js application in coffeescript that has some modest job scheduling needs.</p>
 <p>Heroku's documentation is a little thin on explaining this particular use case, however a good starting point is reading the <a href="https://devcenter.heroku.com/articles/one-off-dynos">One-Off Dyno Documentation</a>.  The important concept to remember is that if you can run your command using "heroku run xxx", you'll be able to run it in the scheduler.  These one-off dynos should be place in a bin/ directory in your project root.</p>
@@ -71,5 +64,5 @@ Job Complete<br />
 heroku addons:add scheduler:standard<br />
 heroku addons:open scheduler<br />
 {% endhighlight %}</p>
-<p>A browser should pop open, and we can schedule our nightly job. <a href="https://adamnengland.files.wordpress.com/2013/04/screen-shot-2013-04-23-at-11-07-48-am.png"><img class="alignnone size-medium wp-image-225" alt="Screen Shot 2013-04-23 at 11.07.48 AM" src="assets/screen-shot-2013-04-23-at-11-07-48-am.png?w=300" width="300" height="103" /></a></p>
+<p>A browser should pop open, and we can schedule our nightly job. <a href="/assets/screen-shot-2013-04-23-at-11-07-48-am.png"><img class="alignnone size-medium wp-image-225" alt="Screen Shot 2013-04-23 at 11.07.48 AM" src="/assets/screen-shot-2013-04-23-at-11-07-48-am.png" width="300" height="103" /></a></p>
 <p>Thats all folks.</p>
