@@ -1,0 +1,36 @@
+---
+layout: post
+title: Customizing Android Master/Detail Activities
+date: 2013-01-27 17:19:28.000000000 -06:00
+categories: []
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '25054220'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>For me, the hardest part of learning mobile development is the totally foreign UI and layout concepts.  My application is centered around a master/detail view.  The ADT application helped me create a master/detail activity, giving me this:</p>
+<p><a href="screen-shot-2013-01-27-at-5-16-12-pm.png"><img class="alignnone size-medium wp-image-187" alt="Screen Shot 2013-01-27 at 5.16.12 PM" src="/assets/screen-shot-2013-01-27-at-5-16-12-pm.png" width="226" height="300" /></a></p>
+<p>&nbsp;</p>
+<p>While this is all very nice, its not quite good enough to release yet.  I need to customize my list view, as well as my detail view to provide more information than just a single string.  Starting with the list view, I find the xml layout for the list, which consists of the following:</p>
+<p>{% highlight xml %}<br />
+&lt;fragment xmlns:android="http://schemas.android.com/apk/res/android"<br />
+    xmlns:tools="http://schemas.android.com/tools"<br />
+    android:id="@+id/portofentry_list"<br />
+    android:name="com.borderizer.android.PortOfEntryListFragment"<br />
+    android:layout_width="match_parent"<br />
+    android:layout_height="match_parent"<br />
+    android:layout_marginLeft="16dp"<br />
+    android:layout_marginRight="16dp"<br />
+    tools:context=".PortOfEntryListActivity"<br />
+    tools:layout="@android:layout/list_content" /&gt;<br />
+{% endhighlight %}</p>

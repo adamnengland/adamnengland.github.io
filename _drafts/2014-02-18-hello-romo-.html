@@ -1,0 +1,35 @@
+---
+layout: post
+title: Hello Romo!
+date: 2014-02-18 07:54:32.000000000 -06:00
+categories: []
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '25054220'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>So, we got an adorable Romo to live at our house.  His name is Slar, after the gorn from Star Trek.  Yeah.</p>
+<p>The tutorials and lab are fun, but what I'm really interested in is developing an app using the SDK.  To get started, romotive has documentation here  http://romotive.com/developers-quickstart/, but lets start out slow and see what we get.</p>
+<p>Fire up Xcode</p>
+<p>1.  Start from the HelloRomo project</p>
+<p>Delete the romo folder and then drag the 2 frameworks &amp; 1 bundle into the frameworks in xcode</p>
+<p>If you're only using RMCore:<br />
+Drag frameworks/RMCore.framework into your app's frameworks folder.<br />
+In additon, go to the "Build Phases" tab for your app's target, and add the following external frameworks:<br />
+ CoreMotion.framework<br />
+ ExternalAccessory.framework<br />
+If you're only using RMCharacter:<br />
+Drag frameworks/RMCharacter.framework and frameworks/RMCharacter.bundle into your app's frameworks folder.<br />
+In additon, go to the "Build Phases" tab for your app's target, and add the following external frameworks:<br />
+ AVFoundation.framework<br />
+ QuartzCore.framework</p>

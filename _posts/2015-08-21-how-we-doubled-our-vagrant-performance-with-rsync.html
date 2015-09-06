@@ -1,0 +1,79 @@
+---
+layout: post
+title: How we doubled our Vagrant performance with Rsync
+date: 2015-08-21 16:30:13.000000000 -05:00
+categories:
+- Rails
+tags:
+- rails
+- vagrant
+status: publish
+type: post
+published: true
+author: Adam N England
+comments: true
+---
+The <a href="http://rednovalabs.theresumator.com/">Engineering team</a> at <a href="http://www.rednovalabs.com">Red Nova Labs</a> has been working to simplify our development process. Recently, we've been experimenting with <a href="https://www.vagrantup.com/">Vagrant</a> as a good tool to do this.
+
+However, we've had the same problem that many developers have with Vagrant - performance. The app in question is very large, and running in development mode - no asset precompilation, no minification. The development machine is a Macbook Pro with 8GB Ram and a 2.6Ghz Core i5 processor.
+
+The only thing that changes across these test runs is the shared folder configuration in vagrant.
+
+Lets start with <a href="http://docs.vagrantup.com/v2/synced-folders/virtualbox.html">Synced Folders in VirtualBox</a>. The out-of-the-box performance was pretty dismal.
+
+{% highlight bash %}
+» wrk -d30s http://localhost:3000/health_check
+Running 30s test @ http://localhost:3000/health_check
+  2 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     0.00us    0.00us   0.00us     nan%
+    Req/Sec     0.00      0.00     0.00    100.00%
+  10 requests in 30.09s, 4.09KB read
+  Socket errors: connect 0, read 0, write 0, timeout 10
+Requests/sec:      0.33
+Transfer/sec:     139.24B
+{% endhighlight %}
+
+This isn't surprising, it has been well established for years that <a href="http://docs.vagrantup.com/v2/synced-folders/nfs.html">NFS</a> performance is superior to shared folders.  In fact most of the documentation out there (including Stefan Wrobel's wonderful <a href="https://stefanwrobel.com/how-to-make-vagrant-performance-not-suck" target="_blank">How to make Vagrant performance not suck</a>) recommends NFS as the best practice. Just add this line to your Vagrantfile
+
+{% highlight bash %}
+config.vm.synced_folder '.', '/vagrant', id: "vagrant_root", nfs: true
+{% endhighlight %}
+
+And it is faster.  A lot faster.
+
+{% highlight bash %}
+» wrk -d30s http://localhost:3000/health_check
+Running 30s test @ http://localhost:3000/health_check
+  2 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.07s   196.68ms   1.59s    87.73%
+    Req/Sec     4.69      2.36    13.00     75.68%
+  277 requests in 30.02s, 113.34KB read
+Requests/sec:      9.23
+Transfer/sec:      3.78KB
+{% endhighlight %}
+
+The good news is that we don't have to stop there anymore.  As of Vagrant 1.5, we've got an even better option, <a href="http://docs.vagrantup.com/v2/synced-folders/rsync.html">rsync</a>. Modify your Vagrantfile to include this:
+
+{% highlight bash %}
+config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/", rsync__auto: true
+{% endhighlight %}
+
+And when we run our benchmark:
+
+{% highlight bash %}
+» wrk -d30s http://localhost:3000/health_check
+Running 30s test @ http://localhost:3000/health_check
+  2 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   484.11ms  122.34ms   1.05s    66.56%
+    Req/Sec    10.71      5.56    40.00     77.84%
+  612 requests in 30.06s, 250.42KB read
+Requests/sec:     20.36
+Transfer/sec:      8.33KB
+{% endhighlight %}
+
+In this specific situation, we see a huge improvement moving from shared folders to NFS. On top of that, we are able to double it by switching to Rsync. The switch is only one line of code, so you really don't have anything to lose by trying it out on your project.
+
+If you've moved your Vagrant setup from NFS to Rsync, please leave a comment, and let other readers know whether it made a difference for you.

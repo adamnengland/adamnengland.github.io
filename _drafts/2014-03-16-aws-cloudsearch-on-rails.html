@@ -1,0 +1,43 @@
+---
+layout: post
+title: AWS CloudSearch on Rails
+date: 2014-03-16 20:01:36.000000000 -05:00
+categories: []
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '25054220'
+  _oembed_d32f82529f1ab42f0f26bcc5d7a1d75a: '{{unknown}}'
+  _oembed_fea43dc066cb830565fcab06387e7477: '{{unknown}}'
+author:
+  login: adamnengland
+  email: adam.n.england@gmail.com
+  display_name: adamnengland
+  first_name: ''
+  last_name: ''
+excerpt: !ruby/object:Hpricot::Doc
+  options: {}
+---
+<p>https://github.com/duwanis/asari</p>
+<p>rails new cloudsearch-rails-demo</p>
+<p>First, add the dependencies on asari.  Your gemfile should look like this:</p>
+<p>{% highlight ruby %}<br />
+source 'https://rubygems.org'<br />
+gem 'rails', '4.0.2'<br />
+gem 'sqlite3'<br />
+gem 'sass-rails', '~&gt; 4.0.0'<br />
+gem 'uglifier', '&gt;= 1.3.0'<br />
+gem 'coffee-rails', '~&gt; 4.0.0'<br />
+gem 'jquery-rails'<br />
+gem 'turbolinks'<br />
+gem 'jbuilder', '~&gt; 1.2'</p>
+<p>gem 'asari'<br />
+{% endhighlight %}</p>
+<p>bundle install</p>
+<p>rails g scaffold Post body:text category:string</p>
+<p>rake db:migrate<br />
+rails s<br />
+http://0.0.0.0:3000/posts</p>
+<p>alert('hi');</p>
