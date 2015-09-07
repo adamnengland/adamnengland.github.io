@@ -27,6 +27,7 @@ I really like the <a href="https://github.com/fernandezpablo85/scribe-java">Scri
 Unfortunately, Scribe doesn't support Digg out of the box (it does however, support Facebook, Yahoo, FourSquare, Vimeo, and many others).  Adding support for a new service is simple.
 
 Lets start with a sample client application:
+
 {% highlight java linenos %}
 package org.scribe.examples;
 import java.util.Scanner;
@@ -83,7 +84,8 @@ public class DiggExample {
 {% endhighlight %}
 Simple enough - pay special attention to line 18. This is scribe's fluent api for setting up the oAuth provider. After that, we have a pretty simple workflow - get a request token, ask the user to authorize the application, and trade the request token in for an access token.
 The code to make this all work is even easier. Scribe provides 2 base classes - DefaultApi10a and DefaultApi20 (for oAuth v1.0a and oAuth v2 respectively). Since Digg's api uses oAuth v1, we just extend DefaultApi10a and plug in the right info, like so:
-{% highlight java %}
+
+{% highlight java linenos%}
 package org.scribe.builder.api;
 import org.scribe.model.Token;
 public class DiggApi extends DefaultApi10a {
@@ -103,4 +105,5 @@ public class DiggApi extends DefaultApi10a {
   }
 }
 {% endhighlight %}
+
 Thats it, we're done.  You can get the code <a href="https://github.com/adamnengland/scribe-java/">here</a>
