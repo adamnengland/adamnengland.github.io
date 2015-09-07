@@ -32,69 +32,77 @@ author: Adam N England
 <p>To start up the server, type <em>brunch watch --server</em> and go to <em>http://localhost:3333/</em> in a new browser window. If everything is good, you'll see this:</p>
 <p><a href="/assets/screen-shot-2013-09-06-at-3-25-22-pm.png"><img class="alignnone size-medium wp-image-287" alt="Screen Shot 2013-09-06 at 3.25.22 PM" src="/assets/screen-shot-2013-09-06-at-3-25-22-pm.png" width="300" height="131" /></a></p>
 <p>You'll need a basic application to test out our concept, so we'll modify the routes and the controller, and add a new view and template to our project.</p>
-<p>{% highlight javascript %}
-module.exports = (match) -&gt;<br />
-  match '', 'home#index'<br />
-  match 'form', 'home#form'<br />
-{% endhighlight %}</p>
-<p>{% highlight javascript %}
-Controller = require 'controllers/base/controller'<br />
-HeaderView = require 'views/home/header-view'<br />
+
+{% highlight coffeescript linenos %}
+module.exports = (match) ->
+  match '', 'home#index'
+  match 'form', 'home#form'
+{% endhighlight %}
+
+{% highlight coffeescript linenos %}
+Controller = require 'controllers/base/controller'
+HeaderView = require 'views/home/header-view'
 FormView = require 'views/home/form'</p>
-<p>module.exports = class HomeController extends Controller<br />
-  form: -&gt;<br />
-    @view = new FormView region: 'main'<br />
-{% endhighlight %}</p>
-<p>{% highlight javascript %}
-View = require 'views/base/view'<br />
-Form = require 'models/form'</p>
-<p>module.exports = class FormView extends View<br />
-  autoRender: true<br />
-  className: 'form-view'<br />
-  template: require './templates/form'<br />
-  events:<br />
-    'click a.validateButton' : "validate"</p>
-<p>  initialize: -&gt;<br />
-    super<br />
-    @model = new Form()</p>
-<p>  validate: (e) -&gt;<br />
-    @model.validate()<br />
-    e.preventDefault()</p>
-<p>{% endhighlight %}</p>
-<p>{% highlight javascript %}
-&lt;form&gt;<br />
-  &lt;div&gt;<br />
-    &lt;label for="name"&gt;Name&lt;/label&gt;&lt;input type="text" name="name" class="name" /&gt;<br />
-  &lt;/div&gt;<br />
-  &lt;div&gt;<br />
-    &lt;label for="phone"&gt;Phone&lt;/label&gt;&lt;input type="text" name="phone" class="phone" /&gt;<br />
-  &lt;/div&gt;<br />
-  &lt;div&gt;<br />
-    &lt;label for="email"&gt;Email&lt;/label&gt;&lt;input type="text" name="email" class="email" /&gt;<br />
-  &lt;/div&gt;<br />
-  &lt;a href="#" class="validateButton"&gt;Validate&lt;/a&gt;<br />
-&lt;/form&gt;<br />
-{% endhighlight %}</p>
+module.exports = class HomeController extends Controller
+  form: ->
+    @view = new FormView region: 'main'
+{% endhighlight %}
+
+{% highlight coffeescript linenos %}
+View = require 'views/base/view'
+Form = require 'models/form'
+module.exports = class FormView extends View
+  autoRender: true
+  className: 'form-view'
+  template: require './templates/form'
+  events:
+    'click a.validateButton' : "validate"
+  initialize: ->
+    super
+    @model = new Form()
+      validate: (e) ->
+    @model.validate()
+    e.preventDefault()
+{% endhighlight %}
+
+{% highlight html linenos %}
+<form>
+  <div>
+    <label for="name">Name</label><nput type="text" name="name" class="name" />
+  </div>
+  <div>
+    <label for="phone">Phone</label><input type="text" name="phone" class="phone" />
+  </div>
+  <div>
+    <label for="email">Email</label><input type="text" name="email" class="email" />
+  </div>
+  <a href="#" class="validateButton">Validate</a>
+</form>
+{% endhighlight %}
+
 <p>With that code in place, lets do a quick checkpoint <em>http://localhost:3333/form</em>.  We should get an ugly view like this:</p>
 <p><a href="/assets/screen-shot-2013-09-06-at-3-50-32-pm.png"><img src="/assets/screen-shot-2013-09-06-at-3-50-32-pm.png" alt="Screen Shot 2013-09-06 at 3.50.32 PM" width="300" height="135" class="alignnone size-medium wp-image-295" /></a></p>
 <p>So, we know we want a basic form that can save name, phone, and email.  Following the guidelines on the validation docs https://github.com/thedersen/backbone.validation, lets add the rules to our model.</p>
-<p>{% highlight javascript %}
-BaseModel = require 'models/base/model'</p>
-<p>module.exports = class Form extends BaseModel<br />
-  validation :<br />
-    name:<br />
-      required: true<br />
-    email:<br />
-      required: true<br />
-      pattern: "email"<br />
-{% endhighlight %}</p>
+
+{% highlight coffeescript linenos %}
+BaseModel = require 'models/base/model'
+module.exports = class Form extends BaseModel
+  validation :
+    name:
+      required: true
+    email:
+      required: true
+      pattern: "email"
+{% endhighlight %}
+
 <p>We'll also need to add the <a href="https://raw.github.com/thedersen/backbone.validation/master/dist/backbone-validation.js">code</a> to our vendor/scripts folder.</p>
 <p>In a perfect world, the @model.validate() call would execute our validation rules.  However, in this world, we get a javascript error</p>
 <p><em>Uncaught TypeError: Object # has no method 'validate'</em></p>
 <p>There is one final step.  We need to bind our model to the validation, so add the call in the attach method of our view:</p>
-<p>{% highlight javascript %}
-  attach: -&gt;<br />
-    super<br />
-    Backbone.Validation.bind(@);<br />
-{% endhighlight %}</p>
+
+{% highlight coffeescript linenos %}
+  attach: ->
+    super
+    Backbone.Validation.bind(@);
+{% endhighlight %}
 <p>Thats it!  <a href="https://github.com/adamnengland/backbone-validator-chaplin-example">Full source code</a> for the example is available on github.</p>
