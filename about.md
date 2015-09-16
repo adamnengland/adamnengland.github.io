@@ -1,8 +1,7 @@
 ---
 layout: page
-title: About
+title: About Adam N England
 permalink: /about/
-feature-img: "img/sample_feature_img_2.png"
 ---
 <p>Adam N England is the Director of Engineering at <a href="http://www.rednovalabs.com">Red Nova Labs</a>, and a veteran of the Kansas City startup community. He dabbles in a variety of technologies, including mobile development, web development, Node.js, Rails, and Java.</p>
 <p>Adam has written software for a variety of companies around the Midwest, from Fortune 500 companies to Internet Startups.  For the full story, see here: <a href="http://www.linkedin.com/pub/adam-england/7/455/8a0">http://www.linkedin.com/pub/adam-england/7/455/8a0</a></p>
