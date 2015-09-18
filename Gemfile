@@ -8,4 +8,3 @@ gem 'github-pages', versions['github-pages']
 
 gem 'jekyll'
 gem 'jekyll-paginate'
-gem "jekyll-categories"
