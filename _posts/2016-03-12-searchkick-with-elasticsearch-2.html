@@ -1,23 +1,43 @@
 ---
 layout: post
-title: Moving an ActiveRecord Binary field t
-date: 2015-07-20 20:33:09.000000000 -05:00
-categories: []
-tags: []
-status: draft
+title: Using Searchkick with Elastic Search 2.0
+date: 2017-03-12 20:33:09.000000000 -05:00
+categories:
+- Rails
+tags:
+- elasticsearch
+- searchkick
+- rails
+- ruby
+status: publish
 type: post
-published: false
+published: true
 meta: {}
 author:
   login: adamnengland
   email: adam.n.england@gmail.com
   display_name: adamnengland
-  first_name: ''
-  last_name: ''
+  first_name: 'Adam'
+  last_name: 'England'
 excerpt: !ruby/object:Hpricot::Doc
   options: {}
 ---
-<p>So, you made a mistake.  You stored binary files in your postgres database. Now, your database is growing in size, and you feel ashamed.  It starts with something like this:</p>
+<p>I've been a fan of SearchKick for years - it provides a great interface to ElasticSearch from your Ruby code. Recently, however, performance had become an issue.  We were using the async updates, and our sidekiq queues were overloaded with ElasticSearch updates.</p>
+<p>Luckily, the team behind SearchKick recently introduced a great feature to address this issue:  <a href="https://github.com/ankane/searchkick#queuing">queueing</a>.  Basically, your updates are stored on redis, rather than sending to ElasticSearch immediately.  Later, you call the update worker, and the updates are sent in a batch.  Very efficient for scaled applications</p>
+<p>When upgrading to the gem, I ran into 2 problems.</p>
+<ol>
+  <li>ActiveRecord 5.0 is specified in the gemspec - This collided with my Rails 4 app.</li>
+  <li>In my gemfile, the elastic-search gem got upgraded to 5.0</li>
+</ol>
+<p>If you are working in Rails 5 and using ElasticSearch 5, this is probably great.  But if your project isn't quite on the bleeding edge, you need to make a few adjustments. This worked for me:</p>
+<p>Instead of just upgrading your current searchkick install like this:</p>
+<p>{% highlight bash %}
+  gem update searchkick
+<p>{% endhighlight %}</p>
+
+
+
+
 <p>{% highlight ruby %}</p>
 <p>create_table "business", force: :cascade do |t|<br />
   t.binary   "logo"<br />
