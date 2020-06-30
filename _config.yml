@@ -68,3 +68,6 @@ sass:
   style: :compressed
 
 permalink: /:year/:month/:day/:title/
+
+gems:
+  - jekyll-feed
