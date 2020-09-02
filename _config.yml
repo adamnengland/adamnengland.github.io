@@ -66,6 +66,9 @@ highlighter: pygments
 sass:
   sass_dir: _sass
   style: :compressed
+  
+feed:
+  posts_limit: 100
 
 permalink: /:year/:month/:day/:title/
 
