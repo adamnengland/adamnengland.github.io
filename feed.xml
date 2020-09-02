@@ -9,7 +9,7 @@ layout: null
     <link>{{ site.url }}{{ site.baseurl }}/</link>
     <description>{{ site.theme.description | xml_escape }}</description>
     <pubDate>{{ site.time | date_to_rfc822 }}</pubDate>
-    {% for post in site.posts limit:15 %}
+    {% for post in site.posts limit:100 %}
       <item>
         <title>{{ post.title | xml_escape }}</title>
         <link>{{ post.url | prepend: site.baseurl | prepend: site.url }}</link>
