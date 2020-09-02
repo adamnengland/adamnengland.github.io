@@ -69,6 +69,7 @@ sass:
   
 feed:
   posts_limit: 100
+  path: atom.xml
 
 permalink: /:year/:month/:day/:title/
 
